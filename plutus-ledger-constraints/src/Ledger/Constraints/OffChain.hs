@@ -594,8 +594,9 @@ processConstraint = \case
         unbalancedTx . tx . Tx.mintScripts %= Set.insert mintingPolicyScript
         unbalancedTx . tx . Tx.mint <>= value i
         mintRedeemers . at mpsHash .= Just red
-    MustPayToPubKey pk vl -> do
-        unbalancedTx . tx . Tx.outputs %= (Tx.TxOut{txOutAddress=pubKeyHashAddress pk,txOutValue=vl,txOutDatumHash=Nothing} :)
+    MustPayToPubKey pk mdv vl -> do
+        let hash = datumHash <$> mdv
+        unbalancedTx . tx . Tx.outputs %= (Tx.TxOut{txOutAddress=pubKeyHashAddress pk,txOutValue=vl,txOutDatumHash=hash} :)
         valueSpentOutputs <>= provided vl
     MustPayToOtherScript vlh dv vl -> do
         let addr = Address.scriptHashAddress vlh
