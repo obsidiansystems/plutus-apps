@@ -40,6 +40,7 @@ import Plutus.Trace qualified as Trace
 import Plutus.Trace.Emulator (ContractInstanceTag, EmulatorTrace, activateContract, activeEndpoints, callEndpoint)
 import Plutus.Trace.Emulator.Types (ContractInstanceLog (..), ContractInstanceMsg (..), ContractInstanceState (..),
                                     UserThreadMsg (..))
+import Plutus.V1.Ledger.Contexts (findDatum)
 import Plutus.V1.Ledger.Scripts (Datum (..), DatumHash)
 import Plutus.V1.Ledger.Tx (TxOut (..))
 import PlutusTx qualified
