@@ -48,6 +48,7 @@ module Ledger.Constraints.OffChain(
     ) where
 
 import Control.Lens (At (at), iforM_, makeLensesFor, over, use, view, (%=), (.=), (<>=))
+import Control.Monad (forM_)
 import Control.Monad.Except (MonadError (catchError, throwError), runExcept, unless)
 import Control.Monad.Reader (MonadReader (ask), ReaderT (runReaderT), asks)
 import Control.Monad.State (MonadState (get, put), execStateT, gets)
@@ -595,6 +596,9 @@ processConstraint = \case
         unbalancedTx . tx . Tx.mint <>= value i
         mintRedeemers . at mpsHash .= Just red
     MustPayToPubKey pk mdv vl -> do
+        -- if datum is presented, add it to 'datumWitnesses'
+        forM_ mdv $ \dv -> do
+            unbalancedTx . tx . Tx.datumWitnesses . at (datumHash dv) .= Just dv
         let hash = datumHash <$> mdv
         unbalancedTx . tx . Tx.outputs %= (Tx.TxOut{txOutAddress=pubKeyHashAddress pk,txOutValue=vl,txOutDatumHash=hash} :)
         valueSpentOutputs <>= provided vl

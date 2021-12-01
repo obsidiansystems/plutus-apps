@@ -50,6 +50,8 @@ import Wallet.Emulator.Wallet (walletAddress)
 import Plutus.ChainIndex.Types
 import Plutus.Contract.Effects (ActiveEndpoint (..))
 
+import Debug.Trace
+
 tests :: TestTree
 tests =
     let run :: String -> TracePredicate -> EmulatorTrace () -> _
@@ -200,8 +202,9 @@ tests =
                 let payment = Constraints.mustPayWithDatumToPubKey w2PubKeyHash datum (Ada.adaValueOf 10)
                 tx <- submitTx payment
                 let txOuts = fmap fst $ Ledger.getCardanoTxOutRefs tx
+                let tt = Ledger.getCardanoTxUnspentOutputsTx tx
                 -- tell the tx out' datum hash that was specified by 'mustPayWithDatumToPubKey'
-                tell [txOutDatumHash (txOuts !! 1)]
+                tell [trace (show tt) $ txOutDatumHash (txOuts !! 1)]
 
               datum = Datum $ PlutusTx.toBuiltinData (23 :: Integer)
               isExpectedDatumHash [Just hash] = hash == datumHash datum
